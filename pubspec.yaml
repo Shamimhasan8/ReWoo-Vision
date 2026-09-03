@@ -1,0 +1,207 @@
+name: gemma_chat
+
+description: "Bangla-first, controller-free on-device visual assistant for blind users."
+
+# Private application.
+publish_to: "none"
+
+# App version.
+version: 1.3.0+3
+
+# ============================================================================
+# DART SDK
+# ============================================================================
+#
+# background_downloader 9.5.9 requires Dart >= 3.7.
+# disk_space_plus 0.2.6 requires Dart >= 3.7.
+#
+# Our current Dart 3.8.1 requirement satisfies both.
+#
+environment:
+  sdk: ^3.8.1
+
+# ============================================================================
+# DEPENDENCIES
+# ============================================================================
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # --------------------------------------------------------------------------
+  # UI
+  # --------------------------------------------------------------------------
+
+  cupertino_icons: ^1.0.8
+
+  # --------------------------------------------------------------------------
+  # LOCAL GEMMA / MEDIAPIPE
+  # --------------------------------------------------------------------------
+  #
+  # Upgraded from 0.10.0 -> 0.10.6.
+  #
+  # 0.10.6 includes:
+  #
+  # - Android download timeout fixes
+  # - Hugging Face ETag handling
+  # - smarter download retry/backoff
+  # - download reliability improvements
+  # - Android image corruption fixes
+  #
+  # We intentionally stay on the 0.10.x API line for now.
+  # Do NOT jump directly to flutter_gemma 1.x until our GemmaService
+  # implementation is migrated and tested.
+  #
+  flutter_gemma: 0.10.6
+
+  # --------------------------------------------------------------------------
+  # FILE SYSTEM
+  # --------------------------------------------------------------------------
+
+  path_provider: ^2.1.5
+
+  # --------------------------------------------------------------------------
+  # FREE STORAGE CHECK
+  # --------------------------------------------------------------------------
+  #
+  # Used by DeviceCapabilityService before starting the ~3.1 GB model
+  # download.
+  #
+  # Our target will be roughly:
+  #
+  # available storage >= 6 GB
+  #
+  disk_space_plus: 0.2.6
+
+  device_info_plus: 11.5.0
+
+  # --------------------------------------------------------------------------
+  # NEW LARGE-FILE BACKGROUND DOWNLOADER
+  # --------------------------------------------------------------------------
+  #
+  # This will replace flutter_downloader.
+  #
+  # Required features for the Gemma model:
+  #
+  # - background download
+  # - pause/resume
+  # - retries
+  # - persistent task state
+  # - long-running Android download support
+  # - Android 14/15 large-transfer handling
+  #
+  background_downloader: 9.5.9
+
+  # --------------------------------------------------------------------------
+  # TEMPORARY LEGACY DOWNLOADER
+  # --------------------------------------------------------------------------
+  #
+  # IMPORTANT:
+  #
+  # DO NOT REMOVE THIS YET.
+  #
+  # Current files still import flutter_downloader:
+  #
+  # lib/download_page/services/download_manager.dart
+  # lib/download_page/logic/download_logic.dart
+  #
+  # They currently use types such as:
+  #
+  # DownloadTask
+  # DownloadTaskStatus
+  # FlutterDownloader
+  #
+  # Removing this dependency before those files are migrated would cause
+  # compilation errors.
+  #
+  # FINAL MIGRATION:
+  #
+  # After download_manager.dart + download_logic.dart +
+  # download_state_manager.dart are converted to background_downloader,
+  # REMOVE this line completely.
+  #
+  flutter_downloader: ^1.12.0
+
+  # --------------------------------------------------------------------------
+  # TEXT TO SPEECH
+  # --------------------------------------------------------------------------
+
+  flutter_tts: ^4.2.3
+
+  # --------------------------------------------------------------------------
+  # CAMERA
+  # --------------------------------------------------------------------------
+
+  camera: ^0.11.2
+
+  # --------------------------------------------------------------------------
+  # NETWORK / URL / AUTH
+  # --------------------------------------------------------------------------
+
+  url_launcher: ^6.3.1
+  http: ^1.4.0
+  crypto: ^3.0.6
+  flutter_web_auth_2: ^4.1.0
+
+  # --------------------------------------------------------------------------
+  # SPEECH RECOGNITION
+  # --------------------------------------------------------------------------
+
+  speech_to_text: ^7.2.0
+
+  # --------------------------------------------------------------------------
+  # PERMISSIONS
+  # --------------------------------------------------------------------------
+
+  permission_handler: ^11.3.0
+
+  # --------------------------------------------------------------------------
+  # MARKDOWN / CHAT
+  # --------------------------------------------------------------------------
+
+  gpt_markdown: ^1.1.2
+  remove_markdown: ^0.0.2
+
+  # --------------------------------------------------------------------------
+  # WAKELOCK
+  # --------------------------------------------------------------------------
+
+  wakelock_plus: ^1.3.2
+
+  # --------------------------------------------------------------------------
+  # AUDIO
+  # --------------------------------------------------------------------------
+
+  audioplayers: ^6.5.0
+
+  # --------------------------------------------------------------------------
+  # PERSISTENT SETTINGS / DOWNLOAD STATE
+  # --------------------------------------------------------------------------
+
+  shared_preferences: ^2.5.3
+
+  # --------------------------------------------------------------------------
+  # OCR
+  # --------------------------------------------------------------------------
+
+  google_mlkit_text_recognition: ^0.15.0
+
+# ============================================================================
+# DEVELOPMENT DEPENDENCIES
+# ============================================================================
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+
+# ============================================================================
+# FLUTTER
+# ============================================================================
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/
