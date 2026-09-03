@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- =============================================================== -->
+    <!-- NETWORK -->
+    <!-- =============================================================== -->
+
+    <uses-permission
+        android:name="android.permission.INTERNET" />
+
+    <uses-permission
+        android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+
+    <!-- =============================================================== -->
+    <!-- CAMERA -->
+    <!-- =============================================================== -->
+
+    <uses-permission
+        android:name="android.permission.CAMERA" />
+
+
+    <!-- =============================================================== -->
+    <!-- MICROPHONE / AUDIO -->
+    <!-- =============================================================== -->
+
+    <uses-permission
+        android:name="android.permission.RECORD_AUDIO" />
+
+    <uses-permission
+        android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+
+
+    <!-- =============================================================== -->
+    <!-- BLUETOOTH HEADSET / MICROPHONE -->
+    <!-- =============================================================== -->
+
+    <!-- Android 11 / API 30 and below -->
+    <uses-permission
+        android:name="android.permission.BLUETOOTH"
+        android:maxSdkVersion="30" />
+
+    <uses-permission
+        android:name="android.permission.BLUETOOTH_ADMIN"
+        android:maxSdkVersion="30" />
+
+    <!-- Android 12 / API 31+ -->
+    <uses-permission
+        android:name="android.permission.BLUETOOTH_CONNECT" />
+
+
+    <!-- =============================================================== -->
+    <!-- BACKGROUND LARGE DOWNLOAD -->
+    <!-- =============================================================== -->
+
+    <!-- Base foreground-service permission. -->
+    <uses-permission
+        android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <!--
+        Required when targeting Android 14 / API 34+ and using
+        background_downloader foreground data-sync mode.
+    -->
+    <uses-permission
+        android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+
+    <!--
+        Android 13 / API 33+ notification runtime permission.
+
+        background_downloader uses a running notification for foreground
+        large downloads.
+    -->
+    <uses-permission
+        android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!--
+        DO NOT add RUN_USER_INITIATED_JOBS yet.
+
+        Current DownloadManager uses:
+
+            priority: 5
+
+        Therefore background_downloader uses normal/foreground WorkManager,
+        not Android 14+ User Initiated Data Transfer (UIDT).
+
+        If DownloadManager is later changed to:
+
+            priority: 0
+
+        then add:
+
+        <uses-permission
+            android:name="android.permission.RUN_USER_INITIATED_JOBS" />
+
+        and UIDTJobService inside <application>.
+    -->
+
+
+    <!-- =============================================================== -->
+    <!-- APPLICATION -->
+    <!-- =============================================================== -->
+
+    <application
+        android:name="${applicationName}"
+        android:label="rewoo vision"
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
+        android:networkSecurityConfig="@xml/network_security_config">
+
+
+        <!-- =========================================================== -->
+        <!-- MAIN FLUTTER ACTIVITY -->
+        <!-- =========================================================== -->
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:theme="@style/LaunchTheme"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode">
+
+            <meta-data
+                android:name="io.flutter.embedding.android.NormalTheme"
+                android:resource="@style/NormalTheme" />
+
+            <intent-filter>
+
+                <action
+                    android:name="android.intent.action.MAIN" />
+
+                <category
+                    android:name="android.intent.category.LAUNCHER" />
+
+            </intent-filter>
+
+        </activity>
+
+
+        <!-- =========================================================== -->
+        <!-- HUGGING FACE OAUTH CALLBACK -->
+        <!-- =========================================================== -->
+
+        <activity
+            android:name="com.linusu.flutter_web_auth_2.CallbackActivity"
+            android:exported="true">
+
+            <intent-filter
+                android:label="flutter_web_auth_2">
+
+                <action
+                    android:name="android.intent.action.VIEW" />
+
+                <category
+                    android:name="android.intent.category.DEFAULT" />
+
+                <category
+                    android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="com.tommasogiovannini.gemma"
+                    android:host="oauthredirect" />
+
+            </intent-filter>
+
+        </activity>
+
+
+        <!-- =========================================================== -->
+        <!-- OPTIONAL GPU / OPENCL -->
+        <!-- =========================================================== -->
+
+        <!--
+            required=false keeps installation possible on devices without
+            these GPU libraries so GemmaService can use CPU fallback.
+        -->
+
+        <uses-native-library
+            android:name="libOpenCL.so"
+            android:required="false" />
+
+        <uses-native-library
+            android:name="libOpenCL-car.so"
+            android:required="false" />
+
+        <uses-native-library
+            android:name="libOpenCL-pixel.so"
+            android:required="false" />
+
+
+        <!-- =========================================================== -->
+        <!-- TEMPORARY FLUTTER_DOWNLOADER COMPATIBILITY -->
+        <!-- =========================================================== -->
+
+        <!--
+            TEMPORARY.
+
+            Current DownloadManager still contains legacy flutter_downloader
+            compatibility code for old tasks.
+
+            Remove this provider ONLY after:
+
+            1. flutter_downloader is removed from pubspec.yaml
+            2. all FlutterDownloader references are removed from Dart
+            3. old task migration support is no longer needed
+        -->
+
+        <provider
+            android:name="vn.hunghd.flutterdownloader.DownloadedFileProvider"
+            android:authorities="${applicationId}.flutter_downloader.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+
+        </provider>
+
+
+        <!-- =========================================================== -->
+        <!-- CAMERA / APP FILE PROVIDER -->
+        <!-- =========================================================== -->
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+
+        </provider>
+
+
+        <!-- =========================================================== -->
+        <!-- BACKGROUND_DOWNLOADER FOREGROUND SERVICE -->
+        <!-- =========================================================== -->
+
+        <!--
+            Required by background_downloader when foreground execution is
+            enabled for large files and targetSdk >= 34.
+
+            Our DownloadManager configures large model downloads to run in
+            foreground mode.
+        -->
+
+        <service
+            android:name="androidx.work.impl.foreground.SystemForegroundService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync"
+            tools:node="merge" />
+
+
+        <!-- =========================================================== -->
+        <!-- OPTIONAL FUTURE UIDT SERVICE -->
+        <!-- =========================================================== -->
+
+        <!--
+            DO NOT enable yet.
+
+            Enable this only if DownloadManager changes Android 14+ model
+            downloads to:
+
+                priority: 0
+
+            together with RUN_USER_INITIATED_JOBS permission.
+
+            <service
+                android:name="com.bbflight.background_downloader.UIDTJobService"
+                android:permission="android.permission.BIND_JOB_SERVICE"
+                android:exported="true"
+                android:foregroundServiceType="dataSync" />
+        -->
+
+
+        <!-- =========================================================== -->
+        <!-- FLUTTER EMBEDDING -->
+        <!-- =========================================================== -->
+
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
+
+    </application>
+
+
+    <!-- =============================================================== -->
+    <!-- PACKAGE VISIBILITY -->
+    <!-- =============================================================== -->
+
+    <queries>
+
+        <!-- PROCESS TEXT -->
+        <intent>
+
+            <action
+                android:name="android.intent.action.PROCESS_TEXT" />
+
+            <data
+                android:mimeType="text/plain" />
+
+        </intent>
+
+
+        <!-- SPEECH RECOGNIZER -->
+        <intent>
+
+            <action
+                android:name="android.speech.RecognitionService" />
+
+        </intent>
+
+
+        <!-- TEXT TO SPEECH -->
+        <intent>
+
+            <action
+                android:name="android.intent.action.TTS_SERVICE" />
+
+        </intent>
+
+
+        <!-- EXTERNAL HTTPS BROWSER -->
+        <intent>
+
+            <action
+                android:name="android.intent.action.VIEW" />
+
+            <data
+                android:scheme="https" />
+
+        </intent>
+
+
+        <!-- VIDEO VIEWER -->
+        <intent>
+
+            <action
+                android:name="android.intent.action.VIEW" />
+
+            <data
+                android:mimeType="video/*" />
+
+        </intent>
+
+
+        <!-- IMAGE VIEWER -->
+        <intent>
+
+            <action
+                android:name="android.intent.action.VIEW" />
+
+            <data
+                android:mimeType="image/*" />
+
+        </intent>
+
+    </queries>
+
+</manifest>
